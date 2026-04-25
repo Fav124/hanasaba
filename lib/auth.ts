@@ -4,6 +4,10 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { SupabaseAdapter } from '@next-auth/supabase-adapter'
 import { getSupabase } from './supabase'
 
+// Ensure required env vars have fallback values
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || 'fallback-secret-key-change-in-production'
+const NEXTAUTH_URL = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+
 const getAdapter = () => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const secret = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -20,7 +24,7 @@ const getAdapter = () => {
 const googleClientId = process.env.GOOGLE_CLIENT_ID || 'dummy-client-id'
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret'
 
-const authResult = NextAuth({
+const authConfig = {
   providers: [
     GoogleProvider({
       clientId: googleClientId,
@@ -53,11 +57,12 @@ const authResult = NextAuth({
   ],
   adapter: getAdapter(),
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
   },
+  secret: NEXTAUTH_SECRET,
 
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       // Handle manual login - role from token
       if (session.user?.email === 'admin@hanasaba.id') {
         session.user.role = 'admin'
@@ -91,14 +96,11 @@ const authResult = NextAuth({
       return session
     },
   },
-})
-
-// Ensure exports always exist for build compatibility
-const result = authResult ?? {}
-export const handlers = result.handlers ?? {
-  GET: () => new Response('Auth not configured', { status: 503 }),
-  POST: () => new Response('Auth not configured', { status: 503 }),
 }
-export const auth = result.auth ?? (() => null)
-export const signIn = result.signIn ?? (() => Promise.resolve())
-export const signOut = result.signOut ?? (() => Promise.resolve())
+
+const authResult = NextAuth(authConfig)
+
+export const handlers = authResult.handlers
+export const auth = authResult.auth
+export const signIn = authResult.signIn
+export const signOut = authResult.signOut

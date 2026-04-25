@@ -244,7 +244,7 @@ export default function CourierDeliveriesPage() {
                     <textarea
                       value={proofNotes}
                       onChange={(e) => setProofNotes(e.target.value)}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all resize-none"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all resize-none text-gray-900 placeholder:text-gray-400"
                       rows={3}
                       placeholder="Contoh: Pesanan diterima dengan baik..."
                     />

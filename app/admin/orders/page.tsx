@@ -251,7 +251,7 @@ export default function AdminOrdersPage() {
                   <select
                     value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 text-gray-900"
                   >
                     <option value="">Pilih status</option>
                     {statusOptions.map(option => (
@@ -269,7 +269,7 @@ export default function AdminOrdersPage() {
                   <select
                     value={newPaymentStatus}
                     onChange={(e) => setNewPaymentStatus(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 text-gray-900"
                   >
                     <option value="">Pilih status pembayaran</option>
                     <option value="pending">Belum Lunas</option>
@@ -285,7 +285,7 @@ export default function AdminOrdersPage() {
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 resize-none"
+                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 resize-none text-gray-900 placeholder:text-gray-400"
                     rows={3}
                     placeholder="Catatan untuk update ini..."
                   />

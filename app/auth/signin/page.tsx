@@ -87,7 +87,7 @@ export default function SignInPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all"
+                  className="w-full px-4 py-3 bg-white border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
                   placeholder="Masukkan nama Anda"
                   required={!isLogin}
                 />
@@ -103,7 +103,7 @@ export default function SignInPage() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all"
+                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
                 placeholder="admin@hanasaba.id"
                 required
               />
@@ -119,7 +119,7 @@ export default function SignInPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all pr-12"
+                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all pr-12 text-gray-900 placeholder:text-gray-400"
                   placeholder="••••••••"
                   required
                 />

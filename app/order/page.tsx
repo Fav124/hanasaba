@@ -117,7 +117,7 @@ export default function OrderPage() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all"
+                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
                 placeholder="Masukkan nama Anda"
                 required
               />
@@ -133,7 +133,7 @@ export default function OrderPage() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all"
+                className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all text-gray-900 placeholder:text-gray-400"
                 placeholder="08xxxxxxxxxx"
                 required
               />
@@ -149,7 +149,7 @@ export default function OrderPage() {
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all resize-none"
+              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all resize-none text-gray-900 placeholder:text-gray-400"
               rows={3}
               placeholder="Jalan, No. Rumah, Kecamatan, Kota"
               required
@@ -195,7 +195,7 @@ export default function OrderPage() {
               value={formData.notes}
               onChange={handleChange}
               placeholder="Contoh: Sambal dipisah, nasi tidak banyak"
-              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all resize-none"
+              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all resize-none text-gray-900 placeholder:text-gray-400"
               rows={2}
             />
           </div>
