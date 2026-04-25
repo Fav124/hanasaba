@@ -49,13 +49,13 @@ export default function AdminReservationsPage() {
 
   const handleUpdateStatus = async (id: number, status: string) => {
     try {
-      const supabase = getSupabase()
+      const supabase = getSupabase() as any
       if (!supabase) return
 
-      const { error } = await (supabase
+      const { error } = await supabase
         .from('reservations')
-        .update({ status } as any)
-        .eq('id', id) as any)
+        .update({ status })
+        .eq('id', id)
 
       if (error) throw error
 

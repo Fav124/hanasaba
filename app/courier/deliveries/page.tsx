@@ -127,16 +127,60 @@ export default function CourierDeliveriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
-        >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Pengiriman Saya</h1>
-          <p className="text-gray-600">Kelola dan upload bukti pengiriman</p>
-        </motion.div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard Kurir</h1>
+              <p className="text-gray-600 mt-1">Kelola pengiriman pesanan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center shadow-sm">
+                <Truck className="w-7 h-7 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm font-medium">Total Pengiriman</p>
+                <p className="text-3xl font-bold text-gray-900">{deliveries.length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center shadow-sm">
+                <Clock className="w-7 h-7 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm font-medium">Sedang Dikirim</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {deliveries.filter(d => d.status === 'delivering').length}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center shadow-sm">
+                <CheckCircle className="w-7 h-7 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-gray-500 text-sm font-medium">Selesai</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {deliveries.filter(d => d.status === 'delivered').length}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Deliveries List */}
@@ -146,10 +190,13 @@ export default function CourierDeliveriesPage() {
             transition={{ delay: 0.1 }}
             className="space-y-4"
           >
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Daftar Pengiriman</h2>
             {deliveries.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-                <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">Tidak ada pengiriman aktif</p>
+              <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="w-10 h-10 text-gray-400" />
+                </div>
+                <p className="text-gray-600 font-medium">Tidak ada pengiriman aktif</p>
               </div>
             ) : (
               deliveries.map((delivery) => (
@@ -157,8 +204,8 @@ export default function CourierDeliveriesPage() {
                   key={delivery.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className={`bg-white rounded-2xl shadow-lg p-6 cursor-pointer transition-all ${
-                    selectedOrder?.id === delivery.id ? 'ring-2 ring-primary' : 'hover:shadow-xl'
+                  className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 p-6 cursor-pointer transition-all ${
+                    selectedOrder?.id === delivery.id ? 'ring-2 ring-primary shadow-xl' : 'hover:shadow-xl'
                   }`}
                   onClick={() => setSelectedOrder(delivery)}
                 >
@@ -167,8 +214,8 @@ export default function CourierDeliveriesPage() {
                       <h3 className="font-bold text-gray-900">Pesanan #{delivery.id}</h3>
                       <p className="text-sm text-gray-500">{delivery.customer_name}</p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      delivery.status === 'delivering' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                    <span className={`px-4 py-1.5 rounded-full text-xs font-semibold shadow-sm ${
+                      delivery.status === 'delivering' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
                     }`}>
                       {delivery.status === 'delivering' ? 'Sedang Dikirim' : 'Sampai'}
                     </span>
@@ -177,7 +224,7 @@ export default function CourierDeliveriesPage() {
                     <p><strong>Alamat:</strong> {delivery.customer_address}</p>
                     <p><strong>Telepon:</strong> {delivery.customer_phone}</p>
                     <p><strong>Item:</strong> {delivery.items}</p>
-                    <p><strong>Total:</strong> Rp {delivery.total.toLocaleString()}</p>
+                    <p><strong>Total:</strong> Rp {delivery.total?.toLocaleString()}</p>
                   </div>
                 </motion.div>
               ))
@@ -190,7 +237,7 @@ export default function CourierDeliveriesPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl shadow-xl p-6"
+              className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 p-6"
             >
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <Camera className="w-6 h-6 text-primary" />
@@ -199,7 +246,9 @@ export default function CourierDeliveriesPage() {
 
               {selectedOrder.status === 'delivered' ? (
                 <div className="text-center py-8">
-                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-10 h-10 text-emerald-500" />
+                  </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Sudah Diantar</h3>
                   <p className="text-gray-600">Pesanan ini sudah selesai.</p>
                 </div>
@@ -209,7 +258,7 @@ export default function CourierDeliveriesPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Foto Bukti Pengiriman
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary transition-colors">
+                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary transition-colors bg-white">
                       <input
                         type="file"
                         accept="image/*"
@@ -244,7 +293,7 @@ export default function CourierDeliveriesPage() {
                     <textarea
                       value={proofNotes}
                       onChange={(e) => setProofNotes(e.target.value)}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all resize-none text-gray-900 placeholder:text-gray-400"
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-transparent transition-all resize-none text-gray-900 placeholder:text-gray-400"
                       rows={3}
                       placeholder="Contoh: Pesanan diterima dengan baik..."
                     />

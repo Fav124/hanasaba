@@ -96,50 +96,50 @@ export default function UserDashboard() {
       <div className="container mx-auto px-4 py-8">
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                <ShoppingBag className="w-6 h-6 text-primary" />
+              <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center shadow-sm">
+                <ShoppingBag className="w-7 h-7 text-primary" />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Total Pesanan</p>
-                <p className="text-2xl font-bold text-gray-900">{orders.length}</p>
+                <p className="text-gray-500 text-sm font-medium">Total Pesanan</p>
+                <p className="text-3xl font-bold text-gray-900">{orders.length}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-blue-600" />
+              <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center shadow-sm">
+                <Calendar className="w-7 h-7 text-blue-600" />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Total Reservasi</p>
-                <p className="text-2xl font-bold text-gray-900">{reservations.length}</p>
+                <p className="text-gray-500 text-sm font-medium">Total Reservasi</p>
+                <p className="text-3xl font-bold text-gray-900">{reservations.length}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                <User className="w-6 h-6 text-emerald-600" />
+              <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center shadow-sm">
+                <User className="w-7 h-7 text-emerald-600" />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Role</p>
-                <p className="text-2xl font-bold text-gray-900 capitalize">{(session as any)?.user?.role || 'user'}</p>
+                <p className="text-gray-500 text-sm font-medium">Role</p>
+                <p className="text-3xl font-bold text-gray-900 capitalize">{(session as any)?.user?.role || 'user'}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="flex border-b">
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab('orders')}
-              className={`flex-1 px-6 py-4 font-medium transition-colors ${
+              className={`flex-1 px-6 py-4 font-medium transition-all ${
                 activeTab === 'orders'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-primary border-b-2 border-primary bg-white'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
               <div className="flex items-center justify-center gap-2">
@@ -149,10 +149,10 @@ export default function UserDashboard() {
             </button>
             <button
               onClick={() => setActiveTab('reservations')}
-              className={`flex-1 px-6 py-4 font-medium transition-colors ${
+              className={`flex-1 px-6 py-4 font-medium transition-all ${
                 activeTab === 'reservations'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-primary border-b-2 border-primary bg-white'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
               <div className="flex items-center justify-center gap-2">
@@ -166,11 +166,13 @@ export default function UserDashboard() {
             {activeTab === 'orders' ? (
               orders.length === 0 ? (
                 <div className="text-center py-12">
-                  <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Belum ada pesanan</p>
+                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Package className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <p className="text-gray-600 font-medium">Belum ada pesanan</p>
                   <button
                     onClick={() => router.push('/menu')}
-                    className="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-red-700 transition-colors"
+                    className="mt-4 px-6 py-3 bg-primary text-white rounded-xl hover:bg-red-700 transition-colors font-medium shadow-lg shadow-primary/30"
                   >
                     Pesan Sekarang
                   </button>
@@ -182,7 +184,7 @@ export default function UserDashboard() {
                       key={order.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-6 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                      className="p-6 bg-white rounded-xl hover:shadow-md transition-all border border-gray-100"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -198,7 +200,7 @@ export default function UserDashboard() {
                             })}
                           </p>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        <span className={`px-4 py-1.5 rounded-full text-xs font-semibold shadow-sm ${
                           order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
                           order.status === 'delivering' ? 'bg-blue-100 text-blue-700' :
                           order.status === 'preparing' ? 'bg-amber-100 text-amber-700' :
@@ -216,8 +218,9 @@ export default function UserDashboard() {
                       </div>
                       <button
                         onClick={() => router.push(`/track?id=${order.id}`)}
-                        className="mt-4 text-primary font-medium text-sm hover:underline"
+                        className="mt-4 text-primary font-medium text-sm hover:underline flex items-center gap-1"
                       >
+                        <Clock className="w-4 h-4" />
                         Lacak Pesanan
                       </button>
                     </motion.div>
@@ -227,11 +230,13 @@ export default function UserDashboard() {
             ) : (
               reservations.length === 0 ? (
                 <div className="text-center py-12">
-                  <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Belum ada reservasi</p>
+                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Calendar className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <p className="text-gray-600 font-medium">Belum ada reservasi</p>
                   <button
                     onClick={() => router.push('/reserve')}
-                    className="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-red-700 transition-colors"
+                    className="mt-4 px-6 py-3 bg-primary text-white rounded-xl hover:bg-red-700 transition-colors font-medium shadow-lg shadow-primary/30"
                   >
                     Reservasi Sekarang
                   </button>
@@ -243,7 +248,7 @@ export default function UserDashboard() {
                       key={reservation.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-6 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                      className="p-6 bg-white rounded-xl hover:shadow-md transition-all border border-gray-100"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -257,7 +262,7 @@ export default function UserDashboard() {
                             })}
                           </p>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        <span className={`px-4 py-1.5 rounded-full text-xs font-semibold shadow-sm ${
                           reservation.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' :
                           reservation.status === 'pending' ? 'bg-amber-100 text-amber-700' :
                           'bg-red-100 text-red-700'

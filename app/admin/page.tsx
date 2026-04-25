@@ -211,26 +211,27 @@ export default function AdminDashboard() {
       <div className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
+          {stats.map((stat: any, index: number) => (
             <motion.div
               key={stat.label}
-              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow"
+              className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.02 }}
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-gray-500 text-sm">{stat.label}</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                  <p className="text-gray-500 text-sm font-medium">{stat.label}</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
                   <div className="flex items-center gap-1 mt-2">
                     <TrendingUp className="w-4 h-4 text-emerald-500" />
-                    <span className="text-emerald-500 text-sm font-medium">{stat.change}</span>
+                    <span className="text-emerald-500 text-sm font-semibold">{stat.change}</span>
                     <span className="text-gray-400 text-sm">vs kemarin</span>
                   </div>
                 </div>
-                <div className={`${stat.color} w-12 h-12 rounded-xl flex items-center justify-center`}>
-                  <stat.icon className="w-6 h-6 text-white" />
+                <div className={`${stat.color} w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg`}>
+                  <stat.icon className="w-7 h-7 text-white" />
                 </div>
               </div>
             </motion.div>
@@ -241,14 +242,14 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Sales Chart */}
           <motion.div
-            className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm"
+            className="lg:col-span-2 bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-900">Penjualan Minggu Ini</h2>
-              <select className="bg-gray-100 rounded-lg px-3 py-2 text-sm">
+              <select className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20">
                 <option>Minggu Ini</option>
                 <option>Bulan Ini</option>
               </select>
@@ -256,15 +257,15 @@ export default function AdminDashboard() {
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={salesData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" stroke="#9ca3af" />
-                  <YAxis stroke="#9ca3af" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="name" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#fff',
-                      borderRadius: '8px',
-                      border: 'none',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      borderRadius: '12px',
+                      border: '1px solid #e5e7eb',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                     }}
                   />
                   <Bar dataKey="sales" fill="#C41E3A" radius={[8, 8, 0, 0]} />
@@ -275,7 +276,7 @@ export default function AdminDashboard() {
 
           {/* Category Pie Chart */}
           <motion.div
-            className="bg-white rounded-2xl p-6 shadow-sm"
+            className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -293,19 +294,26 @@ export default function AdminDashboard() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {categoryData.map((entry, index) => (
+                    {categoryData.map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#fff',
+                      borderRadius: '12px',
+                      border: '1px solid #e5e7eb',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="flex flex-wrap gap-3 mt-4 justify-center">
               {categoryData.map((item: any) => (
-                <div key={item.name} className="flex items-center gap-2">
+                <div key={item.name} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-100">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="text-sm text-gray-600">{item.name}</span>
+                  <span className="text-sm font-medium text-gray-700">{item.name}</span>
                 </div>
               ))}
             </div>
@@ -316,7 +324,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Monthly Trend */}
           <motion.div
-            className="bg-white rounded-2xl p-6 shadow-sm"
+            className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -325,15 +333,15 @@ export default function AdminDashboard() {
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" stroke="#9ca3af" />
-                  <YAxis stroke="#9ca3af" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="name" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#fff',
-                      borderRadius: '8px',
-                      border: 'none',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      borderRadius: '12px',
+                      border: '1px solid #e5e7eb',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                     }}
                   />
                   <Line
@@ -351,7 +359,7 @@ export default function AdminDashboard() {
 
           {/* Recent Orders */}
           <motion.div
-            className="bg-white rounded-2xl p-6 shadow-sm"
+            className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-100"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
@@ -366,14 +374,14 @@ export default function AdminDashboard() {
               {recentOrders.map((order: any) => (
                 <div
                   key={order.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-4 bg-white rounded-xl hover:shadow-md transition-all border border-gray-100"
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${
                       order.status === 'delivered' ? 'bg-emerald-100' :
                       order.status === 'delivering' ? 'bg-blue-100' : 'bg-amber-100'
                     }`}>
-                      <Package className={`w-5 h-5 ${
+                      <Package className={`w-6 h-6 ${
                         order.status === 'delivered' ? 'text-emerald-600' :
                         order.status === 'delivering' ? 'text-blue-600' : 'text-amber-600'
                       }`} />
