@@ -33,7 +33,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .select('role')
           .eq('id', user.id)
           .single()
-        session.user.role = data?.role || 'user'
+        session.user.role = (data as { role?: string } | null)?.role || 'user'
       } else {
         session.user.role = 'user'
       }
