@@ -46,4 +46,12 @@ const authResult = NextAuth({
   },
 })
 
-export const { handlers, auth, signIn, signOut } = authResult
+// Ensure exports always exist for build compatibility
+const result = authResult ?? {}
+export const handlers = result.handlers ?? {
+  GET: () => new Response('Auth not configured', { status: 503 }),
+  POST: () => new Response('Auth not configured', { status: 503 }),
+}
+export const auth = result.auth ?? (() => null)
+export const signIn = result.signIn ?? (() => Promise.resolve())
+export const signOut = result.signOut ?? (() => Promise.resolve())
