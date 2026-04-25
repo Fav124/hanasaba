@@ -31,11 +31,15 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <motion.div
-              className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center"
+              className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center overflow-hidden"
               whileHover={{ scale: 1.1, rotate: 10 }}
               transition={{ type: "spring", stiffness: 400 }}
             >
-              <Flame className="w-6 h-6 text-primary" />
+              <img
+                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=100&h=100&fit=crop"
+                alt="Hanasaba Logo"
+                className="w-full h-full object-cover"
+              />
             </motion.div>
             <span className="text-2xl font-bold group-hover:text-secondary transition-colors">
               Hanasaba

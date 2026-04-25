@@ -148,24 +148,20 @@ export function Hero() {
                 }}
               />
               
-              {/* Food Image Placeholder */}
+              {/* Food Image */}
               <div className="relative bg-white rounded-3xl shadow-2xl p-4 transform rotate-3 hover:rotate-0 transition-transform duration-500">
                 <div className="bg-gradient-to-br from-orange-100 to-red-100 rounded-2xl aspect-square flex items-center justify-center overflow-hidden">
-                  <motion.div
-                    className="text-center"
+                  <motion.img
+                    src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=600&h=600&fit=crop"
+                    alt="Ayam Geprek"
+                    className="w-full h-full object-cover"
                     animate={{ y: [0, -10, 0] }}
                     transition={{
                       duration: 2,
                       repeat: Infinity,
                       ease: "easeInOut"
                     }}
-                  >
-                    <div className="w-48 h-48 mx-auto mb-4 bg-gradient-to-br from-primary to-red-800 rounded-full flex items-center justify-center shadow-inner">
-                      <Flame className="w-24 h-24 text-secondary" />
-                    </div>
-                    <p className="text-primary font-bold text-xl">Ayam Geprek</p>
-                    <p className="text-red-600 font-bold text-2xl">Special</p>
-                  </motion.div>
+                  />
                 </div>
                 
                 {/* Floating Badge */}

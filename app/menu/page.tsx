@@ -13,12 +13,12 @@ export default function MenuPage() {
   const categories = ['Semua', 'Ayam Geprek', 'Paket', 'Minuman', 'Snack']
 
   const menuItems = [
-    { id: 1, name: 'Ayam Geprek Original', price: 25000, description: 'Ayam geprek crispy dengan sambal pedas pilihan', category: 'Ayam Geprek', image: null, rating: 4.8 },
-    { id: 2, name: 'Ayam Geprek Keju', price: 30000, description: 'Ayam geprek dengan topping keju mozarella leleh', category: 'Ayam Geprek', image: null, rating: 4.9 },
-    { id: 3, name: 'Ayam Geprek Mozzarella', price: 35000, description: 'Premium cheese overload', category: 'Ayam Geprek', image: null, rating: 4.7 },
-    { id: 4, name: 'Paket Family', price: 50000, description: '2 ayam + 2 nasi + 2 minuman', category: 'Paket', image: null, rating: 4.6 },
-    { id: 5, name: 'Es Teh Manis', price: 5000, description: 'Minuman segar', category: 'Minuman', image: null, rating: 4.5 },
-    { id: 6, name: 'Es Jeruk', price: 8000, description: 'Jeruk peras asli', category: 'Minuman', image: null, rating: 4.4 },
+    { id: 1, name: 'Ayam Geprek Original', price: 25000, description: 'Ayam geprek crispy dengan sambal pedas pilihan', category: 'Ayam Geprek', image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop', rating: 4.8 },
+    { id: 2, name: 'Ayam Geprek Keju', price: 30000, description: 'Ayam geprek dengan topping keju mozarella leleh', category: 'Ayam Geprek', image: 'https://images.unsplash.com/photo-1606131731446-5568d87113aa?w=400&h=400&fit=crop', rating: 4.9 },
+    { id: 3, name: 'Ayam Geprek Mozzarella', price: 35000, description: 'Premium cheese overload', category: 'Ayam Geprek', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop', rating: 4.7 },
+    { id: 4, name: 'Paket Family', price: 50000, description: '2 ayam + 2 nasi + 2 minuman', category: 'Paket', image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=400&fit=crop', rating: 4.6 },
+    { id: 5, name: 'Es Teh Manis', price: 5000, description: 'Minuman segar', category: 'Minuman', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&h=400&fit=crop', rating: 4.5 },
+    { id: 6, name: 'Es Jeruk', price: 8000, description: 'Jeruk peras asli', category: 'Minuman', image: 'https://images.unsplash.com/photo-1621505289979-b7ae1c8b7d33?w=400&h=400&fit=crop', rating: 4.4 },
   ]
 
   const filteredItems = menuItems.filter(item => {
@@ -94,8 +94,16 @@ export default function MenuPage() {
               transition={{ delay: index * 0.05 }}
               className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
             >
-              <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                <UtensilsCrossed className="w-16 h-16 text-gray-400" />
+              <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                ) : (
+                  <UtensilsCrossed className="w-16 h-16 text-gray-400" />
+                )}
               </div>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-2">

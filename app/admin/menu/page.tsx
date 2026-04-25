@@ -18,13 +18,13 @@ import {
 const categories = ['Semua', 'Ayam Geprek', 'Paket', 'Minuman', 'Snack']
 
 export default function AdminMenuPage() {
-  const [menuItems, setMenuItems] = useState([
-    { id: 1, name: 'Ayam Geprek Original', price: 25000, description: 'Ayam geprek crispy dengan sambal pedas pilihan', category: 'Ayam Geprek', status: 'active', image: null },
-    { id: 2, name: 'Ayam Geprek Keju', price: 30000, description: 'Ayam geprek dengan topping keju mozarella leleh', category: 'Ayam Geprek', status: 'active', image: null },
-    { id: 3, name: 'Ayam Geprek Mozzarella', price: 35000, description: 'Premium cheese overload', category: 'Ayam Geprek', status: 'active', image: null },
-    { id: 4, name: 'Paket Family', price: 50000, description: '2 ayam + 2 nasi + 2 minuman', category: 'Paket', status: 'active', image: null },
-    { id: 5, name: 'Es Teh Manis', price: 5000, description: 'Minuman segar', category: 'Minuman', status: 'active', image: null },
-    { id: 6, name: 'Es Jeruk', price: 8000, description: 'Jeruk peras asli', category: 'Minuman', status: 'inactive', image: null },
+  const [menuItems, setMenuItems] = useState<any[]>([
+    { id: 1, name: 'Ayam Geprek Original', price: 25000, description: 'Ayam geprek crispy dengan sambal pedas pilihan', category: 'Ayam Geprek', status: 'active', image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop' },
+    { id: 2, name: 'Ayam Geprek Keju', price: 30000, description: 'Ayam geprek dengan topping keju mozarella leleh', category: 'Ayam Geprek', status: 'active', image: 'https://images.unsplash.com/photo-1606131731446-5568d87113aa?w=400&h=400&fit=crop' },
+    { id: 3, name: 'Ayam Geprek Mozzarella', price: 35000, description: 'Premium cheese overload', category: 'Ayam Geprek', status: 'active', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop' },
+    { id: 4, name: 'Paket Family', price: 50000, description: '2 ayam + 2 nasi + 2 minuman', category: 'Paket', status: 'active', image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=400&fit=crop' },
+    { id: 5, name: 'Es Teh Manis', price: 5000, description: 'Minuman segar', category: 'Minuman', status: 'active', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&h=400&fit=crop' },
+    { id: 6, name: 'Es Jeruk', price: 8000, description: 'Jeruk peras asli', category: 'Minuman', status: 'inactive', image: 'https://images.unsplash.com/photo-1621505289979-b7ae1c8b7d33?w=400&h=400&fit=crop' },
   ])
 
   const [searchQuery, setSearchQuery] = useState('')
@@ -37,7 +37,7 @@ export default function AdminMenuPage() {
     description: '',
     category: 'Ayam Geprek',
     status: 'active',
-    image: null,
+    image: '' as string | null,
   })
 
   const filteredItems = menuItems.filter(item => {
@@ -295,6 +295,18 @@ export default function AdminMenuPage() {
                     rows={3}
                     className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">URL Gambar</label>
+                  <input
+                    type="text"
+                    placeholder="https://example.com/image.jpg"
+                    value={newItem.image || ''}
+                    onChange={(e) => setNewItem({ ...newItem, image: e.target.value || null })}
+                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Masukkan URL gambar atau biarkan kosong untuk placeholder</p>
                 </div>
 
                 <div>
