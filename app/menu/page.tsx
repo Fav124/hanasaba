@@ -1,25 +1,41 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { UtensilsCrossed, Search, Filter, ShoppingCart, Star, Plus } from 'lucide-react'
 import { useCart } from '@/lib/cart-context'
+import { getSupabase } from '@/lib/supabase'
 
 export default function MenuPage() {
   const { addToCart, cartCount } = useCart()
   const [selectedCategory, setSelectedCategory] = useState('Semua')
   const [searchQuery, setSearchQuery] = useState('')
+  const [menuItems, setMenuItems] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   const categories = ['Semua', 'Ayam Geprek', 'Paket', 'Minuman', 'Snack']
 
-  const menuItems = [
-    { id: 1, name: 'Ayam Geprek Original', price: 25000, description: 'Ayam geprek crispy dengan sambal pedas pilihan', category: 'Ayam Geprek', image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop', rating: 4.8 },
-    { id: 2, name: 'Ayam Geprek Keju', price: 30000, description: 'Ayam geprek dengan topping keju mozarella leleh', category: 'Ayam Geprek', image: 'https://images.unsplash.com/photo-1606131731446-5568d87113aa?w=400&h=400&fit=crop', rating: 4.9 },
-    { id: 3, name: 'Ayam Geprek Mozzarella', price: 35000, description: 'Premium cheese overload', category: 'Ayam Geprek', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop', rating: 4.7 },
-    { id: 4, name: 'Paket Family', price: 50000, description: '2 ayam + 2 nasi + 2 minuman', category: 'Paket', image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=400&fit=crop', rating: 4.6 },
-    { id: 5, name: 'Es Teh Manis', price: 5000, description: 'Minuman segar', category: 'Minuman', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&h=400&fit=crop', rating: 4.5 },
-    { id: 6, name: 'Es Jeruk', price: 8000, description: 'Jeruk peras asli', category: 'Minuman', image: 'https://images.unsplash.com/photo-1621505289979-b7ae1c8b7d33?w=400&h=400&fit=crop', rating: 4.4 },
-  ]
+  useEffect(() => {
+    fetchMenuItems()
+  }, [])
+
+  const fetchMenuItems = async () => {
+    try {
+      const supabase = getSupabase()
+      if (!supabase) return
+
+      const { data } = await supabase
+        .from('menu_items')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      setMenuItems(data || [])
+    } catch (error) {
+      console.error('Error fetching menu items:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filteredItems = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -27,12 +43,23 @@ export default function MenuPage() {
     return matchesSearch && matchesCategory
   })
 
-  const handleAddToCart = (item: typeof menuItems[0]) => {
+  const handleAddToCart = (item: any) => {
     addToCart({
       id: item.id,
       name: item.name,
       price: item.price
     })
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600">Memuat menu...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -64,7 +91,7 @@ export default function MenuPage() {
                 placeholder="Cari menu..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-900 placeholder:text-gray-400"
               />
             </div>
             <div className="flex gap-2 flex-wrap">
@@ -95,9 +122,9 @@ export default function MenuPage() {
               className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
             >
               <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
-                {item.image ? (
+                {item.image_url ? (
                   <img
-                    src={item.image}
+                    src={item.image_url}
                     alt={item.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -112,7 +139,7 @@ export default function MenuPage() {
                   </span>
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm font-medium text-gray-700">{item.rating}</span>
+                    <span className="text-sm font-medium text-gray-700">{item.rating || 4.5}</span>
                   </div>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
@@ -125,10 +152,9 @@ export default function MenuPage() {
                     onClick={() => handleAddToCart(item)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl font-semibold hover:bg-red-700 transition-colors shadow-lg shadow-primary/30"
+                    className="bg-primary text-white p-3 rounded-xl hover:bg-red-700 transition-colors shadow-lg shadow-primary/30"
                   >
-                    <Plus className="w-4 h-4" />
-                    Tambah
+                    <Plus className="w-5 h-5" />
                   </motion.button>
                 </div>
               </div>

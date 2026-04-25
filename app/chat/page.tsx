@@ -53,7 +53,7 @@ export default function ChatPage() {
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Ketik pesan..."
-              className="flex-1 p-2 border rounded-l"
+              className="flex-1 p-2 border rounded-l text-gray-900 placeholder:text-gray-400"
             />
             <button
               onClick={handleSend}

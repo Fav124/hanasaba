@@ -1,31 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Plus,
-  Search,
-  Filter,
-  Edit2,
-  Trash2,
-  Image as ImageIcon,
-  UtensilsCrossed,
-  MoreVertical,
-  ChevronDown,
-  X,
-} from 'lucide-react'
+import { Search, Filter, Plus, Star, Image as ImageIcon, UtensilsCrossed, MoreVertical, ChevronDown, X, Edit2, Trash2 } from 'lucide-react'
+import { getSupabase } from '@/lib/supabase'
 
 const categories = ['Semua', 'Ayam Geprek', 'Paket', 'Minuman', 'Snack']
 
 export default function AdminMenuPage() {
-  const [menuItems, setMenuItems] = useState<any[]>([
-    { id: 1, name: 'Ayam Geprek Original', price: 25000, description: 'Ayam geprek crispy dengan sambal pedas pilihan', category: 'Ayam Geprek', status: 'active', image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop' },
-    { id: 2, name: 'Ayam Geprek Keju', price: 30000, description: 'Ayam geprek dengan topping keju mozarella leleh', category: 'Ayam Geprek', status: 'active', image: 'https://images.unsplash.com/photo-1606131731446-5568d87113aa?w=400&h=400&fit=crop' },
-    { id: 3, name: 'Ayam Geprek Mozzarella', price: 35000, description: 'Premium cheese overload', category: 'Ayam Geprek', status: 'active', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop' },
-    { id: 4, name: 'Paket Family', price: 50000, description: '2 ayam + 2 nasi + 2 minuman', category: 'Paket', status: 'active', image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=400&fit=crop' },
-    { id: 5, name: 'Es Teh Manis', price: 5000, description: 'Minuman segar', category: 'Minuman', status: 'active', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&h=400&fit=crop' },
-    { id: 6, name: 'Es Jeruk', price: 8000, description: 'Jeruk peras asli', category: 'Minuman', status: 'inactive', image: 'https://images.unsplash.com/photo-1621505289979-b7ae1c8b7d33?w=400&h=400&fit=crop' },
-  ])
+  const [menuItems, setMenuItems] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Semua')
@@ -46,33 +30,124 @@ export default function AdminMenuPage() {
     return matchesSearch && matchesCategory
   })
 
-  const handleAdd = () => {
-    if (newItem.name && newItem.price) {
-      setMenuItems([...menuItems, { ...newItem, id: Date.now(), price: Number(newItem.price) }])
-      setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active', image: null })
-      setShowAddModal(false)
+  useEffect(() => {
+    fetchMenuItems()
+  }, [])
+
+  const fetchMenuItems = async () => {
+    try {
+      const supabase = getSupabase()
+      if (!supabase) return
+
+      const { data } = await supabase
+        .from('menu_items')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      setMenuItems(data || [])
+    } catch (error) {
+      console.error('Error fetching menu items:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const handleDelete = (id: number) => {
-    setMenuItems(menuItems.filter(item => item.id !== id))
+  const handleAdd = async () => {
+    if (newItem.name && newItem.price) {
+      try {
+        const supabase = getSupabase()
+        if (!supabase) return
+
+        const { data, error } = await supabase
+          .from('menu_items')
+          .insert({
+            name: newItem.name,
+            price: Number(newItem.price),
+            description: newItem.description,
+            category: newItem.category,
+            image_url: newItem.image || null,
+          } as any)
+          .select()
+          .single()
+
+        if (error) throw error
+
+        setMenuItems([...menuItems, data])
+        setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active', image: '' as string | null })
+        setShowAddModal(false)
+      } catch (error) {
+        console.error('Error adding menu item:', error)
+        alert('Gagal menambah menu')
+      }
+    }
+  }
+
+  const handleDelete = async (id: number) => {
+    try {
+      const supabase = getSupabase()
+      if (!supabase) return
+
+      const { error } = await supabase
+        .from('menu_items')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+
+      setMenuItems(menuItems.filter(item => item.id !== id))
+    } catch (error) {
+      console.error('Error deleting menu item:', error)
+      alert('Gagal menghapus menu')
+    }
   }
 
   const handleEdit = (item: any) => {
     setEditingItem(item)
-    setNewItem({ ...item, price: String(item.price) })
+    setNewItem({ ...item, price: String(item.price), image: item.image_url || '' })
     setShowAddModal(true)
   }
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (editingItem) {
-      setMenuItems(menuItems.map(item => 
-        item.id === editingItem.id ? { ...newItem, id: item.id, price: Number(newItem.price) } : item
-      ))
-      setEditingItem(null)
-      setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active', image: null })
-      setShowAddModal(false)
+      try {
+        const supabase = getSupabase()
+        if (!supabase) return
+
+        const { error } = await (supabase
+          .from('menu_items')
+          .update({
+            name: newItem.name,
+            price: Number(newItem.price),
+            description: newItem.description,
+            category: newItem.category,
+            image_url: newItem.image || null,
+          } as any)
+          .eq('id', editingItem.id) as any)
+
+        if (error) throw error
+
+        setMenuItems(menuItems.map(item =>
+          item.id === editingItem.id ? { ...newItem, id: item.id, price: Number(newItem.price), image_url: newItem.image || null } : item
+        ))
+        setEditingItem(null)
+        setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active', image: '' as string | null })
+        setShowAddModal(false)
+      } catch (error) {
+        console.error('Error updating menu item:', error)
+        alert('Gagal update menu')
+      }
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600">Memuat data...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -105,7 +180,7 @@ export default function AdminMenuPage() {
                 placeholder="Cari menu..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-900 placeholder:text-gray-400"
               />
             </div>
             <div className="relative">
@@ -257,7 +332,7 @@ export default function AdminMenuPage() {
                     placeholder="Contoh: Ayam Geprek Spesial"
                     value={newItem.name}
                     onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
@@ -269,7 +344,7 @@ export default function AdminMenuPage() {
                       placeholder="25000"
                       value={newItem.price}
                       onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-900 placeholder:text-gray-400"
                     />
                   </div>
                   <div>
@@ -277,7 +352,7 @@ export default function AdminMenuPage() {
                     <select
                       value={newItem.category}
                       onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-900"
                     >
                       {categories.filter(c => c !== 'Semua').map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -293,7 +368,7 @@ export default function AdminMenuPage() {
                     value={newItem.description}
                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
@@ -304,7 +379,7 @@ export default function AdminMenuPage() {
                     placeholder="https://example.com/image.jpg"
                     value={newItem.image || ''}
                     onChange={(e) => setNewItem({ ...newItem, image: e.target.value || null })}
-                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-900 placeholder:text-gray-400"
                   />
                   <p className="text-xs text-gray-500 mt-1">Masukkan URL gambar atau biarkan kosong untuk placeholder</p>
                 </div>

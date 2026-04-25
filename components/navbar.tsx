@@ -8,10 +8,20 @@ import { useState } from 'react'
 import { useCart } from '@/lib/cart-context'
 
 const navLinks = [
-  { href: '/menu', label: 'Menu' },
-  { href: '/order', label: 'Order' },
-  { href: '/reserve', label: 'Reserve' },
-  { href: '/reviews', label: 'Reviews' },
+  { name: 'Beranda', href: '/' },
+  { name: 'Menu', href: '/menu' },
+  { name: 'Reservasi', href: '/reserve' },
+  { name: 'Lacak Pesanan', href: '/track' },
+]
+
+const adminLinks = [
+  { name: 'Dashboard', href: '/admin' },
+  { name: 'Kelola Menu', href: '/admin/menu' },
+  { name: 'Kelola Pesanan', href: '/admin/orders' },
+]
+
+const courierLinks = [
+  { name: 'Dashboard Kurir', href: '/courier/deliveries' },
 ]
 
 export function Navbar() {
@@ -54,7 +64,7 @@ export function Navbar() {
                 href={link.href}
                 className="px-4 py-2 rounded-full hover:bg-white/10 transition-all hover:text-secondary"
               >
-                {link.label}
+                {link.name}
               </Link>
             ))}
             <Link
@@ -77,12 +87,30 @@ export function Navbar() {
               </Link>
             )}
             {session?.user?.role === 'admin' && (
-              <Link
-                href="/admin"
-                className="px-4 py-2 rounded-full bg-secondary text-primary font-semibold hover:bg-yellow-400 transition-all"
-              >
-                Admin
-              </Link>
+              <>
+                {adminLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="px-4 py-2 rounded-full bg-secondary text-primary font-semibold hover:bg-yellow-400 transition-all"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </>
+            )}
+            {session?.user?.role === 'courier' && (
+              <>
+                {courierLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="px-4 py-2 rounded-full bg-secondary text-primary font-semibold hover:bg-yellow-400 transition-all"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </>
             )}
 
             {/* Auth Button */}
@@ -129,9 +157,8 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
               >
-                {link.label}
+                {link.name}
               </Link>
             ))}
             <Link

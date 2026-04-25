@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ShoppingCart, MapPin, Phone, User, Send, CheckCircle } from 'lucide-react'
-import { getSupabase } from '@/lib/supabase'
+import { MapPin, ShoppingCart, User, Phone, ArrowRight, CheckCircle, Send, Minus, Plus, X } from 'lucide-react'
 import { useCart } from '@/lib/cart-context'
+import { getSupabase } from '@/lib/supabase'
+import { useSession } from 'next-auth/react'
 
 export default function OrderPage() {
-  const { cart, cartTotal, clearCart } = useCart()
+  const { cart, cartTotal, clearCart, updateQuantity, removeFromCart } = useCart()
+  const { data: session } = useSession()
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -16,10 +18,17 @@ export default function OrderPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
+    setSubmitSuccess(false)
+    setError('')
+
+    if (cart.length === 0) {
+      setError('Keranjang kosong')
+      return
+    }
 
     try {
       const supabase = getSupabase()
@@ -47,7 +56,8 @@ export default function OrderPage() {
           payment_status: 'pending',
           payment_method: 'internal',
           estimated_delivery_time: estimatedDelivery.toISOString(),
-          notes: formData.notes
+          notes: formData.notes,
+          user_id: (session as any)?.user?.id || null
         } as any)
         .select()
         .single()
@@ -74,7 +84,7 @@ export default function OrderPage() {
       setTimeout(() => setSubmitSuccess(false), 3000)
     } catch (error) {
       console.error('Error submitting order:', error)
-      alert('Gagal mengirim pesanan. Silakan coba lagi.')
+      setError('Gagal mengirim pesanan')
     } finally {
       setIsSubmitting(false)
     }
@@ -162,28 +172,46 @@ export default function OrderPage() {
               Keranjang Pesanan
             </label>
             {cart.length === 0 ? (
-              <div className="p-4 bg-gray-50 rounded-xl text-gray-500 text-center">
-                Keranjang kosong. Silakan tambah menu dari halaman Menu.
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                <p className="text-gray-500">Keranjang kosong</p>
               </div>
             ) : (
-              <div className="space-y-2">
-                {cart.map(item => (
-                  <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                    <div>
+              <div className="space-y-3">
+                {cart.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
+                    <div className="flex-1">
                       <p className="font-medium text-gray-900">{item.name}</p>
-                      <p className="text-sm text-gray-500">x{item.quantity}</p>
+                      <p className="text-sm text-gray-600">Rp {item.price.toLocaleString()}</p>
                     </div>
-                    <p className="font-semibold text-primary">
-                      Rp {(item.price * item.quantity).toLocaleString()}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
+                        >
+                          <Minus className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <span className="w-8 text-center font-medium text-gray-900">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors border border-gray-200"
+                        >
+                          <Plus className="w-4 h-4 text-gray-600" />
+                        </button>
+                      </div>
+                      <p className="font-bold text-primary w-24 text-right">
+                        Rp {(item.price * item.quantity).toLocaleString()}
+                      </p>
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors"
+                      >
+                        <X className="w-4 h-4 text-red-600" />
+                      </button>
+                    </div>
                   </div>
                 ))}
-                <div className="flex justify-between items-center p-3 bg-primary/10 rounded-xl mt-2">
-                  <span className="font-bold text-gray-900">Total</span>
-                  <span className="font-bold text-primary text-xl">
-                    Rp {cartTotal.toLocaleString()}
-                  </span>
-                </div>
               </div>
             )}
           </div>

@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
+import { getSupabase } from '@/lib/supabase'
 
 export default function SignInPage() {
   const router = useRouter()
@@ -25,26 +26,83 @@ export default function SignInPage() {
     setError('')
 
     if (isLogin) {
-      // Login with credentials
-      const result = await signIn('credentials', {
-        email: formData.email,
-        password: formData.password,
-        redirect: false
-      })
+      try {
+        const result = await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false
+        })
 
-      if (result?.error) {
-        setError('Email atau password salah')
-      } else {
-        router.push('/admin')
-        router.refresh()
+        if (result?.error) {
+          setError('Email atau password salah')
+        } else {
+          router.push('/')
+          router.refresh()
+        }
+      } catch (error) {
+        setError('Terjadi kesalahan')
+      } finally {
+        setIsLoading(false)
       }
     } else {
-      // Register - for now just redirect to login
-      // In production, you'd create the user in Supabase first
-      setError('Registrasi belum tersedia. Silakan login dengan akun admin.')
-    }
+      try {
+        const supabase = getSupabase()
+        if (!supabase) {
+          setError('Supabase tidak terkonfigurasi')
+          setIsLoading(false)
+          return
+        }
 
-    setIsLoading(false)
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              name: formData.name,
+              role: formData.role
+            }
+          }
+        })
+
+        if (authError) {
+          setError(authError.message)
+          setIsLoading(false)
+          return
+        }
+
+        if (authData.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: authData.user.id,
+              name: formData.name,
+              role: formData.role
+            } as any)
+
+          if (profileError) {
+            console.error('Error creating profile:', profileError)
+          }
+        }
+
+        const result = await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false
+        })
+
+        if (result?.error) {
+          setError('Registrasi berhasil, tapi gagal login otomatis')
+        } else {
+          router.push('/')
+          router.refresh()
+        }
+      } catch (error) {
+        setError('Terjadi kesalahan saat registrasi')
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
   }
 
   const handleGoogleSignIn = async () => {
