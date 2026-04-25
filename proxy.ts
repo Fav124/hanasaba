@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth'
 import type { NextRequest } from 'next/server'
 
-export default auth((req: NextRequest & { auth: any }) => {
+export const proxy = auth((req: NextRequest & { auth: any }) => {
   const isAuth = !!req.auth
   const isAdminRoute = req.nextUrl.pathname.startsWith('/admin')
   const isChatRoute = req.nextUrl.pathname.startsWith('/chat')
@@ -10,12 +10,10 @@ export default auth((req: NextRequest & { auth: any }) => {
     return Response.redirect(new URL('/api/auth/signin', req.nextUrl))
   }
 
-
   if (isChatRoute && !isAuth) {
     return Response.redirect(new URL('/api/auth/signin', req.nextUrl))
   }
 })
-
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
