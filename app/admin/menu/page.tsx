@@ -37,6 +37,7 @@ export default function AdminMenuPage() {
     description: '',
     category: 'Ayam Geprek',
     status: 'active',
+    image: null,
   })
 
   const filteredItems = menuItems.filter(item => {
@@ -48,7 +49,7 @@ export default function AdminMenuPage() {
   const handleAdd = () => {
     if (newItem.name && newItem.price) {
       setMenuItems([...menuItems, { ...newItem, id: Date.now(), price: Number(newItem.price) }])
-      setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active' })
+      setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active', image: null })
       setShowAddModal(false)
     }
   }
@@ -69,7 +70,7 @@ export default function AdminMenuPage() {
         item.id === editingItem.id ? { ...newItem, id: item.id, price: Number(newItem.price) } : item
       ))
       setEditingItem(null)
-      setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active' })
+      setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active', image: null })
       setShowAddModal(false)
     }
   }
@@ -240,7 +241,7 @@ export default function AdminMenuPage() {
                   onClick={() => {
                     setShowAddModal(false)
                     setEditingItem(null)
-                    setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active' })
+                    setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active', image: null })
                   }}
                   className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
                 >
@@ -323,7 +324,7 @@ export default function AdminMenuPage() {
                   onClick={() => {
                     setShowAddModal(false)
                     setEditingItem(null)
-                    setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active' })
+                    setNewItem({ name: '', price: '', description: '', category: 'Ayam Geprek', status: 'active', image: null })
                   }}
                   className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
                 >
