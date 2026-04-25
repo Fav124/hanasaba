@@ -65,7 +65,12 @@ export default function SignInPage() {
         })
 
         if (authError) {
-          setError(authError.message)
+          // Handle rate limit error specifically
+          if (authError.message.includes('rate limit') || authError.message.includes('too many')) {
+            setError('Terlalu banyak percobaan. Silakan tunggu beberapa menit atau gunakan email berbeda.')
+          } else {
+            setError(authError.message)
+          }
           setIsLoading(false)
           return
         }

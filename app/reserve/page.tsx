@@ -25,10 +25,11 @@ export default function ReservePage() {
       const supabase = getSupabase()
       if (!supabase) {
         alert('Supabase tidak terkonfigurasi')
+        setIsSubmitting(false)
         return
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('reservations')
         .insert({
           customer_name: formData.name,
@@ -39,6 +40,8 @@ export default function ReservePage() {
           notes: formData.notes,
           status: 'pending'
         } as any)
+        .select()
+        .single()
 
       if (error) throw error
 
@@ -51,6 +54,7 @@ export default function ReservePage() {
         guests: 2,
         notes: ''
       })
+      alert(`Reservasi berhasil! No. Reservasi: ${(data as any)?.id}`)
       setTimeout(() => setSubmitSuccess(false), 3000)
     } catch (error) {
       console.error('Error submitting reservation:', error)

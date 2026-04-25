@@ -18,10 +18,15 @@ const adminLinks = [
   { name: 'Dashboard', href: '/admin' },
   { name: 'Kelola Menu', href: '/admin/menu' },
   { name: 'Kelola Pesanan', href: '/admin/orders' },
+  { name: 'Kelola Reservasi', href: '/admin/reservations' },
 ]
 
 const courierLinks = [
   { name: 'Dashboard Kurir', href: '/courier/deliveries' },
+]
+
+const userLinks = [
+  { name: 'Dashboard Saya', href: '/dashboard' },
 ]
 
 export function Navbar() {
@@ -102,6 +107,19 @@ export function Navbar() {
             {session?.user?.role === 'courier' && (
               <>
                 {courierLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="px-4 py-2 rounded-full bg-secondary text-primary font-semibold hover:bg-yellow-400 transition-all"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </>
+            )}
+            {session?.user?.role === 'user' && (
+              <>
+                {userLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
