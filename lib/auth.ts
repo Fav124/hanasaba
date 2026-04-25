@@ -30,6 +30,18 @@ const authResult = NextAuth({
 
   callbacks: {
     async session({ session, user }) {
+      // Hardcoded admin emails for quick access
+      const adminEmails: string[] = [
+        // Tambahkan email admin kamu di sini
+        // Contoh: 'your-email@gmail.com',
+      ]
+      
+      // Auto-assign admin role based on email
+      if (adminEmails.includes(session.user?.email || '')) {
+        session.user.role = 'admin'
+        return session
+      }
+      
       const supabase = getSupabase()
       if (supabase && user?.id) {
         const { data } = await supabase
