@@ -21,10 +21,12 @@ export default function AdminOrdersPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [orders, setOrders] = useState<any[]>([])
+  const [couriers, setCouriers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedOrder, setSelectedOrder] = useState<any>(null)
   const [newStatus, setNewStatus] = useState('')
   const [newPaymentStatus, setNewPaymentStatus] = useState('')
+  const [selectedCourier, setSelectedCourier] = useState('')
   const [notes, setNotes] = useState('')
   const [updating, setUpdating] = useState(false)
 
@@ -34,6 +36,7 @@ export default function AdminOrdersPage() {
       return
     }
     fetchOrders()
+    fetchCouriers()
   }, [session, router])
 
   const fetchOrders = async () => {
@@ -54,6 +57,28 @@ export default function AdminOrdersPage() {
     }
   }
 
+  const fetchCouriers = async () => {
+    try {
+      const supabase = getSupabase()
+      if (!supabase) return
+
+      // Fetch hardcoded couriers (for manual login)
+      const hardcodedCouriers = [
+        { id: 'courier-manual', name: 'Courier (Manual)', email: 'courier@hanasaba.id' }
+      ]
+
+      // Fetch couriers from profiles if Supabase is configured
+      const { data: profileCouriers } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('role', 'courier')
+
+      setCouriers([...hardcodedCouriers, ...(profileCouriers || [])])
+    } catch (error) {
+      console.error('Error fetching couriers:', error)
+    }
+  }
+
   const handleUpdateStatus = async () => {
     if (!selectedOrder || !newStatus) return
 
@@ -62,29 +87,43 @@ export default function AdminOrdersPage() {
       const supabase = getSupabase()
       if (!supabase) return
 
+      // Prepare update data
+      const updateData: any = {
+        status: newStatus,
+        payment_status: newPaymentStatus || selectedOrder.payment_status
+      }
+
+      // Assign courier when status is delivering
+      if (newStatus === 'delivering' && selectedCourier) {
+        updateData.courier_id = selectedCourier
+      }
+
       // Update order status
       const { error: updateError } = await (supabase.from('orders') as any)
-        .update({
-          status: newStatus,
-          payment_status: newPaymentStatus || selectedOrder.payment_status
-        })
+        .update(updateData)
         .eq('id', selectedOrder.id)
 
       if (updateError) throw updateError
 
       // Add to status history
+      let historyNotes = notes || `Status diubah ke ${newStatus}`
+      if (newStatus === 'delivering' && selectedCourier) {
+        historyNotes += `. Courier assigned: ${selectedCourier}`
+      }
+
       await supabase
         .from('order_status_history')
         .insert({
           order_id: selectedOrder.id,
           status: newStatus,
-          notes: notes || `Status diubah ke ${newStatus}`
+          notes: historyNotes
         } as any)
 
       alert('Status berhasil diupdate!')
       setSelectedOrder(null)
       setNewStatus('')
       setNewPaymentStatus('')
+      setSelectedCourier('')
       setNotes('')
       fetchOrders()
     } catch (error) {
@@ -277,6 +316,26 @@ export default function AdminOrdersPage() {
                     <option value="failed">Gagal</option>
                   </select>
                 </div>
+
+                {newStatus === 'delivering' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pilih Courier
+                    </label>
+                    <select
+                      value={selectedCourier}
+                      onChange={(e) => setSelectedCourier(e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 text-gray-900"
+                    >
+                      <option value="">Pilih courier</option>
+                      {couriers.map((courier) => (
+                        <option key={courier.id} value={courier.id}>
+                          {courier.name} ({courier.email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">

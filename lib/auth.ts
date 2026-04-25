@@ -41,13 +41,33 @@ const authConfig = {
           return null
         }
 
-        // Manual login with specific credentials
+        // Admin login
         if (credentials.email === 'admin@hanasaba.id' && credentials.password === 'password') {
           return {
             id: 'admin-manual',
             email: 'admin@hanasaba.id',
             name: 'Admin',
             role: 'admin',
+          }
+        }
+
+        // Courier login
+        if (credentials.email === 'courier@hanasaba.id' && credentials.password === 'password') {
+          return {
+            id: 'courier-manual',
+            email: 'courier@hanasaba.id',
+            name: 'Courier',
+            role: 'courier',
+          }
+        }
+
+        // Moderator login
+        if (credentials.email === 'moderator@hanasaba.id' && credentials.password === 'password') {
+          return {
+            id: 'moderator-manual',
+            email: 'moderator@hanasaba.id',
+            name: 'Moderator',
+            role: 'moderator',
           }
         }
 
