@@ -24,7 +24,7 @@ const getAdapter = () => {
 const googleClientId = process.env.GOOGLE_CLIENT_ID || 'dummy-client-id'
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret'
 
-const authConfig = {
+export const authConfig = {
   providers: [
     GoogleProvider({
       clientId: googleClientId,
