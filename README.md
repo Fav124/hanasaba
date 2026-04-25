@@ -8,115 +8,12 @@ Website penjualan restoran ayam geprek dengan fitur lengkap.
 2. Buat project baru
 3. Pergi ke Settings > API untuk mendapatkan URL dan anon key
 4. Pergi ke Authentication > Providers > Google dan enable Google OAuth, set redirect URL ke `http://localhost:3000/api/auth/callback/google` (untuk development)
-5. Buat database tables dengan SQL berikut:
-
-```sql
--- Enable RLS
-ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
-
--- Profiles table
-CREATE TABLE profiles (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  name TEXT,
-  role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin'))
-);
-
--- Menu items
-CREATE TABLE menu_items (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  price INTEGER NOT NULL,
-  description TEXT,
-  category TEXT,
-  image_url TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Orders
-CREATE TABLE orders (
-  id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id),
-  customer_name TEXT NOT NULL,
-  customer_phone TEXT NOT NULL,
-  customer_address TEXT,
-  items TEXT NOT NULL,
-  total INTEGER,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'preparing', 'ready', 'delivered')),
-  order_type TEXT DEFAULT 'delivery' CHECK (order_type IN ('delivery', 'dine_in')),
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Reservations
-CREATE TABLE reservations (
-  id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id),
-  customer_name TEXT NOT NULL,
-  customer_phone TEXT NOT NULL,
-  reservation_date DATE NOT NULL,
-  reservation_time TIME NOT NULL,
-  guests INTEGER NOT NULL,
-  notes TEXT,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled')),
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Reviews
-CREATE TABLE reviews (
-  id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id),
-  customer_name TEXT NOT NULL,
-  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
-  comment TEXT NOT NULL,
-  pinned BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Messages for chat
-CREATE TABLE messages (
-  id SERIAL PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id),
-  sender_name TEXT NOT NULL,
-  content TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Pinned reviews view
-CREATE VIEW pinned_reviews AS
-SELECT * FROM reviews WHERE pinned = TRUE ORDER BY created_at DESC;
-
--- RLS Policies
-CREATE POLICY "Users can view their own profile" ON profiles
-  FOR SELECT USING (auth.uid() = id);
-
-CREATE POLICY "Users can update their own profile" ON profiles
-  FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Anyone can view menu items" ON menu_items FOR SELECT USING (true);
-CREATE POLICY "Only admins can modify menu items" ON menu_items
-  FOR ALL USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-  );
-
-CREATE POLICY "Users can view their own orders" ON orders
-  FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Anyone can create orders" ON orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Admins can view all orders" ON orders FOR SELECT USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-);
-
--- Similar policies for reservations, reviews, messages
-```
-
-6. Set environment variables di `.env.local`:
-
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-```
-
+5. Copy `.env.example` ke `.env.local` dan isi dengan nilai dari Supabase:
+   - `NEXT_PUBLIC_SUPABASE_URL`: URL dari Settings > API
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: anon/public key dari Settings > API
+   - `SUPABASE_SERVICE_ROLE_KEY`: service_role key dari Settings > API
+   - `GOOGLE_CLIENT_ID` dan `GOOGLE_CLIENT_SECRET`: dari Google Cloud Console (OAuth 2.0 credentials)
+6. Jalankan SQL schema dari file `supabase-schema.sql` di Supabase SQL Editor (RLS pada auth.users sudah diaktifkan secara default oleh Supabase, jadi jangan jalankan baris ALTER TABLE auth.users)
 7. Untuk membuat admin user, update role di profiles table setelah login pertama.
 
 ## Menjalankan Project
