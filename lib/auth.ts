@@ -14,20 +14,24 @@ const getAdapter = () => {
   return SupabaseAdapter({ url, secret })
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+// Use dummy values during build if env vars are missing
+// This ensures the build succeeds while actual auth works at runtime
+const googleClientId = process.env.GOOGLE_CLIENT_ID || 'dummy-client-id'
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret'
+
+const authResult = NextAuth({
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
     }),
   ],
   adapter: getAdapter(),
 
   callbacks: {
     async session({ session, user }) {
-      // Add user role from Supabase
       const supabase = getSupabase()
-      if (supabase) {
+      if (supabase && user?.id) {
         const { data } = await supabase
           .from('profiles')
           .select('role')
@@ -39,6 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session
     },
-
   },
 })
+
+export const { handlers, auth, signIn, signOut } = authResult
