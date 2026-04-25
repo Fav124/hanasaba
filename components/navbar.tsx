@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { motion } from 'framer-motion'
-import { Menu, X, User, LogOut, Flame } from 'lucide-react'
+import { Menu, X, User, LogOut, Flame, ShoppingCart } from 'lucide-react'
 import { useState } from 'react'
+import { useCart } from '@/lib/cart-context'
 
 const navLinks = [
   { href: '/menu', label: 'Menu' },
@@ -15,6 +16,7 @@ const navLinks = [
 
 export function Navbar() {
   const { data: session } = useSession()
+  const { cartCount } = useCart()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -51,6 +53,17 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/order"
+              className="relative px-4 py-2 rounded-full hover:bg-white/10 transition-all hover:text-secondary"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-secondary text-primary text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
             {session && (
               <Link
                 href="/chat"
@@ -80,15 +93,13 @@ export function Navbar() {
                 <span className="hidden lg:inline">Logout</span>
               </motion.button>
             ) : (
-              <motion.button
-                onClick={() => signIn('google')}
+              <Link
+                href="/auth/signin"
                 className="ml-2 flex items-center gap-2 px-6 py-2 rounded-full bg-secondary text-primary font-semibold hover:bg-yellow-400 transition-all"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
                 <User className="w-4 h-4" />
                 Login
-              </motion.button>
+              </Link>
             )}
           </div>
 
@@ -119,6 +130,21 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/order"
+              className="flex items-center justify-between px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span>Keranjang</span>
+              <div className="flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="bg-secondary text-primary text-xs font-bold px-2 py-1 rounded-full">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+            </Link>
             {session && (
               <Link
                 href="/chat"
@@ -145,12 +171,13 @@ export function Navbar() {
                 <LogOut className="w-4 h-4" /> Logout
               </button>
             ) : (
-              <button
-                onClick={() => { signIn('google'); setMobileMenuOpen(false); }}
-                className="w-full text-left px-4 py-2 rounded-lg bg-secondary text-primary font-semibold flex items-center gap-2"
+              <Link
+                href="/auth/signin"
+                className="block px-4 py-2 rounded-lg bg-secondary text-primary font-semibold flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <User className="w-4 h-4" /> Login
-              </button>
+              </Link>
             )}
           </div>
         </motion.div>

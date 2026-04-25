@@ -52,33 +52,37 @@ const authResult = NextAuth({
     }),
   ],
   adapter: getAdapter(),
+  session: {
+    strategy: 'jwt',
+  },
 
   callbacks: {
-    async session({ session, user }) {
-      // Handle manual login - role already set in authorize
+    async session({ session, token }) {
+      // Handle manual login - role from token
       if (session.user?.email === 'admin@hanasaba.id') {
         session.user.role = 'admin'
         return session
       }
 
-      // Hardcoded admin emails for quick access
-      const adminEmails: string[] = [
-        // Tambahkan email admin kamu di sini
-        // Contoh: 'your-email@gmail.com',
-      ]
+      // Hardcoded role assignments for quick access
+      const roleAssignments: Record<string, string> = {
+        // Add email -> role mappings here
+        // 'moderator@example.com': 'moderator',
+        // 'courier@example.com': 'courier',
+      }
 
-      // Auto-assign admin role based on email
-      if (adminEmails.includes(session.user?.email || '')) {
-        session.user.role = 'admin'
+      // Auto-assign role based on email
+      if (roleAssignments[session.user?.email || '']) {
+        session.user.role = roleAssignments[session.user?.email || '']
         return session
       }
 
       const supabase = getSupabase()
-      if (supabase && user?.id) {
+      if (supabase && token?.sub) {
         const { data } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', user.id)
+          .eq('id', token.sub)
           .single()
         session.user.role = (data as { role?: string } | null)?.role || 'user'
       } else {
