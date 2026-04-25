@@ -63,13 +63,14 @@ export default function AdminOrdersPage() {
       if (!supabase) return
 
       // Update order status
-      await supabase
-        .from('orders')
+      const { error: updateError } = await (supabase.from('orders') as any)
         .update({
           status: newStatus,
           payment_status: newPaymentStatus || selectedOrder.payment_status
-        } as any)
-        .eq('id', selectedOrder.id) as any
+        })
+        .eq('id', selectedOrder.id)
+
+      if (updateError) throw updateError
 
       // Add to status history
       await supabase
@@ -101,13 +102,12 @@ export default function AdminOrdersPage() {
       const supabase = getSupabase()
       if (!supabase) return
 
-      await supabase
-        .from('orders')
+      await (supabase.from('orders') as any)
         .update({
           is_late: true,
           is_free: true
-        } as any)
-        .eq('id', order.id) as any
+        })
+        .eq('id', order.id)
 
       alert('Pesanan ditandai sebagai terlambat dan gratis!')
       fetchOrders()

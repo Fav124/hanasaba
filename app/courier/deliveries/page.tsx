@@ -80,13 +80,12 @@ export default function CourierDeliveriesPage() {
         } as any)
 
       // Update order status to delivered
-      await supabase
-        .from('orders')
+      await (supabase.from('orders') as any)
         .update({
           status: 'delivered',
           actual_delivery_time: new Date().toISOString()
-        } as any)
-        .eq('id', selectedOrder.id) as any
+        })
+        .eq('id', selectedOrder.id)
 
       // Add status history
       await supabase
