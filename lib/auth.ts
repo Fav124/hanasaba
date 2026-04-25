@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import { SupabaseAdapter } from '@next-auth/supabase-adapter'
 import { getSupabase } from './supabase'
 
@@ -25,23 +26,53 @@ const authResult = NextAuth({
       clientId: googleClientId,
       clientSecret: googleClientSecret,
     }),
+    CredentialsProvider({
+      name: 'Email',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
+
+        // Manual login with specific credentials
+        if (credentials.email === 'admin@hanasaba.id' && credentials.password === 'password') {
+          return {
+            id: 'admin-manual',
+            email: 'admin@hanasaba.id',
+            name: 'Admin',
+            role: 'admin',
+          }
+        }
+
+        return null
+      },
+    }),
   ],
   adapter: getAdapter(),
 
   callbacks: {
     async session({ session, user }) {
+      // Handle manual login - role already set in authorize
+      if (session.user?.email === 'admin@hanasaba.id') {
+        session.user.role = 'admin'
+        return session
+      }
+
       // Hardcoded admin emails for quick access
       const adminEmails: string[] = [
         // Tambahkan email admin kamu di sini
         // Contoh: 'your-email@gmail.com',
       ]
-      
+
       // Auto-assign admin role based on email
       if (adminEmails.includes(session.user?.email || '')) {
         session.user.role = 'admin'
         return session
       }
-      
+
       const supabase = getSupabase()
       if (supabase && user?.id) {
         const { data } = await supabase
